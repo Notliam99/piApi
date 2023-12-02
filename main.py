@@ -1,7 +1,19 @@
-from piApi import wifi
+from piApi import (
+    wifi,
+    config
+)
 
 
-Wlan = wifi()
+default_config = dict({
+    "wifi": {
+        "ssid": "",
+        "password": ""
+    }
+})
+
+Config = config(file_name="./config.json", default_config=default_config)
+
+Wlan = wifi(wifi_config=Config["wifi"])
 
 
 def main():
