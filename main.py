@@ -13,7 +13,7 @@ default_config = dict({
 
 Config = config(file_name="./config.json", default_config=default_config)
 
-Wlan = wifi(wifi_config=Config["wifi"])
+Wlan = wifi(wifi_config=Config.data["wifi"])
 
 
 def main():
