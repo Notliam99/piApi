@@ -6,7 +6,7 @@ from time import sleep
 class wifi:
     """Connect to or setup a network."""
 
-    def __init__(self, wifi_config: dict):
+    def __init__(self, wifi_config: dict) -> None:
         if len(wifi_config["ssid"]) <= 1:
             print("using AP")
             self.wlan = WLAN(AP_IF)
@@ -31,13 +31,15 @@ class wifi:
             while self.wlan.isconnected() is False:
                 print('Waiting for connection...')
                 sleep(1)
-        info = (
-            f'Ip Address:({self.wlan.ifconfig()[0]})',
-            f'Dns Server:({self.wlan.ifconfig()[3]})',
-            f'Gateway:({self.wlan.ifconfig()[2]})',
-            f'Subnet Mask:({self.wlan.ifconfig()[1]})'
+
+    def get_info(self) -> dict:
+        return dict(
+            {
+                "ip": self.wlan.ifconfig()[0],
+                "subnet_mask": self.wlan.ifconfig()[1],
+                "Gateway": self.wlan.ifconfig()[2],
+                "dns": self.wlan.ifconfig()[3],
+                "ssid": self.wlan.config("ssid"),
+                "hostname": self.wlan.config("hostname")
+            }
         )
-        print(
-            f"|{'CONNECTED':-^38}|\n|{info[0]: <38}|\n|{info[1]: <38}|\n|{info[2]: <38}|\n|{info[3]: <38}|\n|{'-'*38}|"
-        )
-        sleep(240)
