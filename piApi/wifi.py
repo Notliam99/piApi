@@ -3,7 +3,7 @@ from network import WLAN, STA_IF, AP_IF
 from time import sleep
 
 
-class wifi:
+class Wifi:
     """Connect to or setup a network."""
 
     def __init__(self, wifi_config: dict) -> None:

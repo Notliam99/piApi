@@ -2,17 +2,15 @@
 from socket import socket
 
 
-class soc():
+class Socket():
     """socket opject"""
 
-    def __init__(self, port: int, wifi_dict: dict, ip=0) -> None:
+    def __init__(self, soc_config: dict, wifi_config: dict) -> None:
         """init the class and create the socket"""
-        if ip == 0:
-            self.ip = wifi_dict["ip"]
-        else:
-            self.ip = ip
 
-        self.port = port
+        self.ip = wifi_config["ip"]
+
+        self.port = soc_config
 
         self.socket = socket()
         self.socket.bind(self.ip, self.port)

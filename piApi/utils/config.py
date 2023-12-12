@@ -1,25 +1,17 @@
 import ujson as json
 
 
-def load_config(file_name, default_config):
-    """Load The Config Or Setup The Defaut One"""
-    data = dict({})
-    while data == {}:
-        try:
-            with open("/config.json") as config_fs:
-                data = json.load(config_fs)
-
-        except Exception as exe:
-            print(exe)
-            with open("./config.json", 'w') as config_fs:
-                json.dump(default_config, config_fs)
-
-    return data
-
-
-class config:
+class Config:
     def __init__(self, file_name: str, default_config: dict):
-        self.data = load_config(
-            file_name=file_name,
-            default_config=default_config
-        )
+        self.default_config = default_config
+        self.data = dict({})
+
+        while self.data == {}:
+            try:
+                with open(file_name) as file:
+                    self.data = json.load(file)
+
+            except Exception as exe:
+                print(exe)
+                with open(file_name, 'w') as file:
+                    json.dump(default_config, file)
