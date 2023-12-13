@@ -20,7 +20,10 @@ class Api():
         self,
         diy=False,
         default_config=default_config,
-        config_name="config.json"
+        config_name="config.json",
+        ap_ssid=None,
+        ap_password=None,
+        hostname=None
     ):
         if diy is True:
             pass
@@ -28,6 +31,14 @@ class Api():
         self.config = Config(config_name, default_config)
         data = self.config.data
 
-        wifi = Wifi(wifi_config=data["wifi"])
+        wifi = Wifi(
+            ssid=data["wifi"]["ssid"],
+            password=data["wifi"]["password"],
+            ap_ssid=ap_ssid,
+            ap_password=ap_password,
+            hostname=hostname
+        )
+
+        print(wifi.get_info())
 
         sleep(200)
