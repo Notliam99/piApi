@@ -1,17 +1,26 @@
 """Opens A Socket"""
-from socket import socket
+import socket
 
 
 class Socket():
-    """socket opject"""
+    """socket helper web server"""
 
-    def __init__(self, soc_config: dict, wifi_config: dict) -> None:
+    def __init__(self, address: tuple[str, int]) -> None:
         """init the class and create the socket"""
 
-        self.ip = wifi_config["ip"]
+        self.address = address
 
-        self.port = soc_config
-
-        self.socket = socket()
-        self.socket.bind(self.ip, self.port)
+        self.socket = socket.socket()
+        self.socket.bind(self.address)
         self.socket.listen(1)
+
+    def get_info(self) -> dict:
+        """
+            returns a dict
+            {
+                address : tuple[str, int]
+            }
+        """
+        return {
+            "address": self.address,
+        }

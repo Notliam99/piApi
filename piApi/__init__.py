@@ -2,6 +2,7 @@
 
 from .wifi import Wifi
 from .utils.config import Config
+from .socket import Socket
 from time import sleep
 
 __version__ = 0.0
@@ -40,5 +41,8 @@ class Api():
         )
 
         print(wifi.get_info())
+        socket = Socket(("0.0.0.0", 80))
+
+        print(socket.get_info())
 
         sleep(200)
