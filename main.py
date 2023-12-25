@@ -14,10 +14,15 @@ from piApi import Api
 api = Api()
 
 
-# @api.error
-# def error(request, error_code):
-#     doc = f'<center><h1>Error: {error_code}<h1></center><hr>'
-#     return doc
+@api.get('/')
+def hello_world(request):
+    doc = f'<center><h1>Hello World<h1></center><hr><center>{request}</center>'
+    return doc
+
+
+@api.get('/request')
+def request(request):
+    return request
 
 
 def Main():

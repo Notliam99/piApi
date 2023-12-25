@@ -68,6 +68,110 @@ class Api():
         self.routes_dict['ERROR'] = wraper
         return wraper
 
+    def connect(self, path: str):
+        def decorator(func):
+            def wraper(request: str, *args, **kwargs):
+                value = func(
+                    request,
+                    *args,
+                    **kwargs
+                )
+                return value
+            self.routes_dict['CONNECT'][path] = wraper
+            return wraper
+        return decorator
+
+    def delete(self, path: str):
+        def decorator(func):
+            def wraper(request: str, *args, **kwargs):
+                value = func(
+                    request,
+                    *args,
+                    **kwargs
+                )
+                return value
+            self.routes_dict['DELETE'][path] = wraper
+            return wraper
+        return decorator
+
+    def get(self, path: str):
+        def decorator(func):
+            def wraper(request: str, *args, **kwargs):
+                value = func(
+                    request,
+                    *args,
+                    **kwargs
+                )
+                return value
+            self.routes_dict['GET'][path] = wraper
+            return wraper
+        return decorator
+
+    def head(self, path: str):
+        def decorator(func):
+            def wraper(request: str, *args, **kwargs):
+                value = func(
+                    request,
+                    *args,
+                    **kwargs
+                )
+                return value
+            self.routes_dict['HEAD'][path] = wraper
+            return wraper
+        return decorator
+
+    def options(self, path: str):
+        def decorator(func):
+            def wraper(request: str, *args, **kwargs):
+                value = func(
+                    request,
+                    *args,
+                    **kwargs
+                )
+                return value
+            self.routes_dict['OPTIONS'][path] = wraper
+            return wraper
+        return decorator
+
+    def post(self, path: str):
+        def decorator(func):
+            def wraper(request: str, *args, **kwargs):
+                value = func(
+                    request,
+                    *args,
+                    **kwargs
+                )
+                return value
+            self.routes_dict['POST'][path] = wraper
+            return wraper
+        return decorator
+
+    def put(self, path: str):
+        def decorator(func):
+            def wraper(request: str, *args, **kwargs):
+                value = func(
+                    request,
+                    *args,
+                    **kwargs
+                )
+                return value
+            self.routes_dict['PUT'][path] = wraper
+            return wraper
+        return decorator
+
+    def trace(self, path: str):
+        def decorator(func):
+            def wraper(request: str, *args, **kwargs):
+                value = func(
+                    request,
+                    *args,
+                    **kwargs
+                )
+                return value
+            self.routes_dict['TRACE'][path] = wraper
+            return wraper
+        return decorator
+
     def run(self, port: int, addr="0.0.0.0") -> None:
         socket = Socket((addr, port))
         self.address = socket.get_info()["address"]
@@ -89,25 +193,33 @@ class Api():
 
             self.routes_dict['ERROR'] == default_error
 
+        print('debuging\n', self.routes_dict)
+
         while True:
             conn, address = socket.socket.accept()
             request = request_parse(str(conn.recv(1024)))
 
-            print(f'{time.time} {self.routes_dict}')
+            responce_code = '200 ok'
 
             try:
                 document = self.routes_dict[request['method']
-                                            ][request['path']]()
+                                            ][request['path']](request)
+                responce_code = '200 ok'
             except Exception as exce:
                 print(exce)
-                document = self.routes_dict['ERROR'](request, 404)
+                responce_code = '404 Not Found'
+                document = self.routes_dict['ERROR'](request, responce_code)
+
+            if type(document) is dict:
+                doc_type = "application/json"
+            else:
+                doc_type = "text/html"
+
+            print(
+                f'{time.time} ({request["method"]} x {request["path"]}) status: {responce_code}')
 
             conn.send(
-                '''
-                HTTP/1.1 200 OK
-                Content-Type: text/html
-                Connection: close
-                '''
+                f'{request["http_version"]} {responce_code}\nContent-Type: {doc_type}\nConnection: close\n\n'
             )
-            conn.sendall(document)
+            conn.sendall(str(document))
             conn.close()
