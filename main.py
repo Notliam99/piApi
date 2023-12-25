@@ -14,6 +14,12 @@ from piApi import Api
 api = Api()
 
 
+# @api.error
+# def error(request, error_code):
+#     doc = f'<center><h1>Error: {error_code}<h1></center><hr>'
+#     return doc
+
+
 def Main():
     api.run(80)
 
