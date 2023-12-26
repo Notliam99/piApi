@@ -5,7 +5,7 @@ from .utils.config import Config
 from .socket import Socket
 import time
 from .utils.request_parse import request_parse
-
+from .utils.responce_headers import responce_headers
 
 __version__ = 0.0
 
@@ -76,7 +76,13 @@ class Api():
                     *args,
                     **kwargs
                 )
-                return value
+                if type(value) is tuple:
+                    if len(value) == 3:
+                        return value[0], value[1], value[2]
+                    else:
+                        return value[0], value[1], {}
+                else:
+                    return value, 200, {}
             self.routes_dict['CONNECT'][path] = wraper
             return wraper
         return decorator
@@ -89,7 +95,13 @@ class Api():
                     *args,
                     **kwargs
                 )
-                return value
+                if type(value) is tuple:
+                    if len(value) == 3:
+                        return value[0], value[1], value[2]
+                    else:
+                        return value[0], value[1], {}
+                else:
+                    return value, 200, {}
             self.routes_dict['DELETE'][path] = wraper
             return wraper
         return decorator
@@ -102,7 +114,13 @@ class Api():
                     *args,
                     **kwargs
                 )
-                return value
+                if type(value) is tuple:
+                    if len(value) == 3:
+                        return value[0], value[1], value[2]
+                    else:
+                        return value[0], value[1], {}
+                else:
+                    return value, 200, {}
             self.routes_dict['GET'][path] = wraper
             return wraper
         return decorator
@@ -115,7 +133,13 @@ class Api():
                     *args,
                     **kwargs
                 )
-                return value
+                if type(value) is tuple:
+                    if len(value) == 3:
+                        return value[0], value[1], value[2]
+                    else:
+                        return value[0], value[1], {}
+                else:
+                    return value, 200, {}
             self.routes_dict['HEAD'][path] = wraper
             return wraper
         return decorator
@@ -128,7 +152,13 @@ class Api():
                     *args,
                     **kwargs
                 )
-                return value
+                if type(value) is tuple:
+                    if len(value) == 3:
+                        return value[0], value[1], value[2]
+                    else:
+                        return value[0], value[1], {}
+                else:
+                    return value, 200, {}
             self.routes_dict['OPTIONS'][path] = wraper
             return wraper
         return decorator
@@ -141,7 +171,13 @@ class Api():
                     *args,
                     **kwargs
                 )
-                return value
+                if type(value) is tuple:
+                    if len(value) == 3:
+                        return value[0], value[1], value[2]
+                    else:
+                        return value[0], value[1], {}
+                else:
+                    return value, 200, {}
             self.routes_dict['POST'][path] = wraper
             return wraper
         return decorator
@@ -154,7 +190,13 @@ class Api():
                     *args,
                     **kwargs
                 )
-                return value
+                if type(value) is tuple:
+                    if len(value) == 3:
+                        return value[0], value[1], value[2]
+                    else:
+                        return value[0], value[1], {}
+                else:
+                    return value, 200, {}
             self.routes_dict['PUT'][path] = wraper
             return wraper
         return decorator
@@ -167,16 +209,29 @@ class Api():
                     *args,
                     **kwargs
                 )
-                return value
+                if type(value) is tuple:
+                    if len(value) == 3:
+                        return value[0], value[1], value[2]
+                    else:
+                        return value[0], value[1], {}
+                else:
+                    return value, 200, {}
             self.routes_dict['TRACE'][path] = wraper
             return wraper
         return decorator
 
-    def run(self, port: int, addr="0.0.0.0") -> None:
+    def run(
+        self,
+        port: int,
+        addr="0.0.0.0",
+        server_name="micropython"
+    ) -> None:
+        # socket init
         socket = Socket((addr, port))
         self.address = socket.get_info()["address"]
         print(f"lissening on {self.address}")
 
+        # catch all
         if not self.routes_dict['ERROR']:
             @self.error
             def default_error(request, error):
@@ -193,33 +248,35 @@ class Api():
 
             self.routes_dict['ERROR'] == default_error
 
-        print('debuging\n', self.routes_dict)
-
         while True:
             conn, address = socket.socket.accept()
             request = request_parse(str(conn.recv(1024)))
 
-            responce_code = '200 ok'
-
             try:
-                document = self.routes_dict[request['method']
-                                            ][request['path']](request)
-                responce_code = '200 ok'
+                document, responce_code, headers = self.routes_dict[request['method']][request['path']](
+                    request)
+
             except Exception as exce:
                 print(exce)
-                responce_code = '404 Not Found'
+                responce_code = 404
                 document = self.routes_dict['ERROR'](request, responce_code)
 
-            if type(document) is dict:
-                doc_type = "application/json"
-            else:
-                doc_type = "text/html"
+            if "Content-Type" not in headers.keys():
+                headers['Content-Type'] = "text/html"
+
+            if "Server" not in headers.keys():
+                headers["Server"] = server_name
 
             print(
-                f'{time.time} ({request["method"]} x {request["path"]}) status: {responce_code}')
-
-            conn.send(
-                f'{request["http_version"]} {responce_code}\nContent-Type: {doc_type}\nConnection: close\n\n'
+                time.time(),
+                f'({request["method"]} x {request["path"]}',
+                'status: {responce_code}'
             )
+
+            conn.send(responce_headers(
+                http_version=request['http_version'],
+                responce_code=responce_code,
+                custom_headers=headers
+            ))
             conn.sendall(str(document))
             conn.close()

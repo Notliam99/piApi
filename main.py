@@ -1,4 +1,6 @@
 from piApi import Api
+import ujson
+import machine
 
 # default_config = dict({
 #     "wifi": {
@@ -17,12 +19,16 @@ api = Api()
 @api.get('/')
 def hello_world(request):
     doc = f'<center><h1>Hello World<h1></center><hr><center>{request}</center>'
-    return doc
+    return doc, 200
 
 
 @api.get('/request')
 def request(request):
-    return request
+    return (
+        ujson.dumps(request),
+        200,
+        {"content-type": "application/json; charset=UTF-8"}
+    )
 
 
 def Main():
