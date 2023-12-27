@@ -20,10 +20,12 @@ def request_parse(request: str):
     regex = re.compile(
         r"(CONNECT|DELETE|GET|HEAD|OPTIONS|POST|PUT|TRACE) (\S*)\s(HTTP/1.1|HTTP/2|HTTP/3)")
     headers = regex.search(request)
-    print(headers)
+    regex = re.compile(r'(^[^?#]+)')
+    path = regex.search(headers.group(0).split(' ')[1])
+    print(path)
     output = {
         "method": headers.group(0).split(' ')[0],
-        "path": headers.group(0).split(' ')[1],
+        "path": path.group(0),
         "http_version": headers.group(0).split(' ')[2]
     }
     request = request[(headers.span()[1]):]
