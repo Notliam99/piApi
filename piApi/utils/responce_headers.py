@@ -1,3 +1,6 @@
+'''Coverts peramiters into a responce string.'''
+
+
 def responce_headers(
         http_version: str,
         responce_code: int,

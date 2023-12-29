@@ -13,6 +13,7 @@ def request_parse(request: str):
         output: dict{
             "method": ("CONNECT"|"DELETE"|"GET"|"HEAD"|"OPTIONS"|"POST"|"PUT"|"TRACE"),: str,
             "path": "/...",:str
+            "raw_path": "/...?...#...",: str # includes ?
             "http_version": ("HTTP/1.1"|"HTTP/2"|"HTTP/3"),:str
             "...": "...":any
         }
@@ -20,12 +21,13 @@ def request_parse(request: str):
     regex = re.compile(
         r"(CONNECT|DELETE|GET|HEAD|OPTIONS|POST|PUT|TRACE) (\S*)\s(HTTP/1.1|HTTP/2|HTTP/3)")
     headers = regex.search(request)
-    regex = re.compile(r'(^[^?#]+)')
+    regex = re.compile(r'(^[^?]+)')
     path = regex.search(headers.group(0).split(' ')[1])
     print(path)
     output = {
         "method": headers.group(0).split(' ')[0],
         "path": path.group(0),
+        "raw_path": headers.group(0).split(' ')[1],
         "http_version": headers.group(0).split(' ')[2]
     }
     request = request[(headers.span()[1]):]
@@ -33,7 +35,7 @@ def request_parse(request: str):
     for i in request:
         if not i or ":" not in i:
             continue
-        value = i.split(":")
+        value = i.split(": ")
         output[value[0]] = value[1]
 
     return output

@@ -7,7 +7,7 @@ import time
 from .utils.request_parse import request_parse
 from .utils.responce_headers import responce_headers
 
-__version__ = 0.0
+__version__ = 1.0
 
 
 default_config = dict({
@@ -19,6 +19,8 @@ default_config = dict({
 
 
 class Api():
+    '''Api Class'''
+
     def __init__(
         self,
         diy=False,
@@ -27,7 +29,17 @@ class Api():
         ap_ssid=None,
         ap_password=None,
         hostname=None
-    ):
+    ) -> None:
+        '''
+            The init function for the api class.
+            ARGS:
+                diy: bool # doesnt init any modules
+                default_config: dict optional
+                config_name: str optional # names the config file
+                ap_ssid: str optional
+                ap_password: str optional
+                hostname: optional
+        '''
         if diy is True:
             pass
 
@@ -57,6 +69,17 @@ class Api():
         print(wifi.get_info())
 
     def error(self, func):
+        '''
+            Error decorator is a catchall it must follow.
+            ARGS:
+                    request: dict # containing the raw request
+            RETURN:
+                    document: str
+                    responce_code: int optional
+
+                # need to have the responce code
+                custom_responce_args: dict optional
+        '''
         def wraper(request: str, error_code: int, *args, **kwargs):
             value = func(
                 request,
@@ -69,6 +92,17 @@ class Api():
         return wraper
 
     def connect(self, path: str):
+        '''
+            The function being decorated must follow.
+            ARGS:
+                    request: dict # containing the raw request
+            RETURN:
+                    document: str
+                    responce_code: int optional
+
+                # need to have the responce code
+                custom_responce_args: dict optional
+        '''
         def decorator(func):
             def wraper(request: str, *args, **kwargs):
                 value = func(
@@ -88,6 +122,17 @@ class Api():
         return decorator
 
     def delete(self, path: str):
+        '''
+            The function being decorated must follow.
+            ARGS:
+                    request: dict # containing the raw request
+            RETURN:
+                    document: str
+                    responce_code: int optional
+
+                # need to have the responce code
+                custom_responce_args: dict optional
+        '''
         def decorator(func):
             def wraper(request: str, *args, **kwargs):
                 value = func(
@@ -107,6 +152,17 @@ class Api():
         return decorator
 
     def get(self, path: str):
+        '''
+            The function being decorated must follow.
+            ARGS:
+                    request: dict # containing the raw request
+            RETURN:
+                    document: str
+                    responce_code: int optional
+
+                # need to have the responce code
+                custom_responce_args: dict optional
+        '''
         def decorator(func):
             def wraper(request: str, *args, **kwargs):
                 value = func(
@@ -126,6 +182,17 @@ class Api():
         return decorator
 
     def head(self, path: str):
+        '''
+            The function being decorated must follow.
+            ARGS:
+                    request: dict # containing the raw request
+            RETURN:
+                    document: str
+                    responce_code: int optional
+
+                # need to have the responce code
+                custom_responce_args: dict optional
+        '''
         def decorator(func):
             def wraper(request: str, *args, **kwargs):
                 value = func(
@@ -145,6 +212,17 @@ class Api():
         return decorator
 
     def options(self, path: str):
+        '''
+            The function being decorated must follow.
+            ARGS:
+                    request: dict # containing the raw request
+            RETURN:
+                    document: str
+                    responce_code: int optional
+
+                # need to have the responce code
+                custom_responce_args: dict optional
+        '''
         def decorator(func):
             def wraper(request: str, *args, **kwargs):
                 value = func(
@@ -164,6 +242,17 @@ class Api():
         return decorator
 
     def post(self, path: str):
+        '''
+            The function being decorated must follow.
+            ARGS:
+                    request: dict # containing the raw request
+            RETURN:
+                    document: str
+                    responce_code: int optional
+
+                # need to have the responce code
+                custom_responce_args: dict optional
+        '''
         def decorator(func):
             def wraper(request: str, *args, **kwargs):
                 value = func(
@@ -183,6 +272,17 @@ class Api():
         return decorator
 
     def put(self, path: str):
+        '''
+            The function being decorated must follow.
+            ARGS:
+                    request: dict # containing the raw request
+            RETURN:
+                    document: str
+                    responce_code: int optional
+
+                # need to have the responce code
+                custom_responce_args: dict optional
+        '''
         def decorator(func):
             def wraper(request: str, *args, **kwargs):
                 value = func(
@@ -202,6 +302,17 @@ class Api():
         return decorator
 
     def trace(self, path: str):
+        '''
+            The function being decorated must follow.
+            ARGS:
+                    request: dict # containing the raw request
+            RETURN:
+                    document: str
+                    responce_code: int optional
+
+                # need to have the responce code
+                custom_responce_args: dict optional
+        '''
         def decorator(func):
             def wraper(request: str, *args, **kwargs):
                 value = func(
@@ -223,12 +334,19 @@ class Api():
     def run(
         self,
         port: int,
-        addr="0.0.0.0",
+        address="0.0.0.0",
         server_name="micropython"
     ) -> None:
+        '''
+            Run the web server
+            ARGS:
+                port: int
+                address: str optional
+                server_name: str optional
+        '''
         # socket init
-        socket = Socket((addr, port))
-        self.address = socket.get_info()["address"]
+        socket = Socket((address, port))
+        self.address = socket.get_info()
         print(f"lissening on {self.address}")
 
         # catch all
@@ -252,6 +370,8 @@ class Api():
             conn, address = socket.socket.accept()
             request = request_parse(str(conn.recv(1024)))
 
+            headers = dict({})
+
             try:
                 document, responce_code, headers = self.routes_dict[request['method']][request['path']](
                     request)
@@ -267,10 +387,13 @@ class Api():
             if "Server" not in headers.keys():
                 headers["Server"] = server_name
 
+            localtime = time.localtime()
+
             print(
-                time.time(),
-                f'({request["method"]} x {request["path"]}',
-                'status: {responce_code}'
+                f'{localtime[5]}:{localtime[4]}:{localtime[3]},',
+                f'{localtime[2]}D:{localtime[1]}M:{localtime[0]}Y',
+                f'({request["method"]}: {request["path"]},',
+                f'status: {responce_code})'
             )
 
             conn.send(responce_headers(

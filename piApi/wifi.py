@@ -12,15 +12,26 @@ class Wifi:
         password: str,
         ap_ssid=None,
         ap_password=None,
-        hostname=None
+        hostname='micropython.local'
     ) -> None:
-
+        '''
+            inits the wifi class
+            ARGS:
+                ssid: str
+                password: str
+                ap_ssid: str optional
+                ap_password: str optional
+                hostname: str optional
+        '''
         # Set Default Values If One Is Not Given.
         if not ap_ssid:
             ap_ssid = "micropython"
 
         if not ap_password:
-            ap_password = "password"
+            security = 0
+            ap_password = "12345678"
+        else:
+            security = 3
 
         if not hostname:
             hostname = "micropython.local"
@@ -33,7 +44,7 @@ class Wifi:
             self.wlan.config(
                 ssid=ap_ssid,
                 password=ap_password,
-                security=0,
+                security=security,
                 hostname=hostname
             )
             self.wlan.active(True)

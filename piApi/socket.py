@@ -16,11 +16,11 @@ class Socket():
 
     def get_info(self) -> dict:
         """
-            returns a dict
-            {
-                address : tuple[str, int]
-            }
+            Get info on the socket.
+            RETURNS:
+                address: tuple(
+                    ip_address: str
+                    port: int
+                )
         """
-        return {
-            "address": self.address,
-        }
+        return self.address,

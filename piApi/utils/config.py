@@ -2,7 +2,16 @@ import ujson as json
 
 
 class Config:
-    def __init__(self, file_name: str, default_config: dict):
+    '''
+        Reads and writes to the config.
+        ARGS:
+            file_name: str
+            default_config
+        RETURNS:
+            None # get the config using the data varible
+    '''
+
+    def __init__(self, file_name: str, default_config: dict) -> None:
         self.default_config = default_config
         self.data = dict({})
 

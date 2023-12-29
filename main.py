@@ -1,34 +1,28 @@
 from piApi import Api
-import ujson
-import machine
 
-# default_config = dict({
-#     "wifi": {
-#         "ssid": "",
-#     "password": ""
-#     }
-# })
-
-# Config = config(file_name="./config.json", default_config=default_config)
-
-# Wlan = wifi(wifi_config=Config.data["wifi"])
 
 api = Api()
 
 
 @api.get('/')
 def hello_world(request):
-    doc = f'<center><h1>Hello World<h1></center><hr><center>{request}</center>'
+    """
+        Index route decorated by @api.get()
+        ARGS:
+            request: dict # contains the parsed request
+        RETURNS:
+            document: str
+            responce_code: int # optional
+            custom_headers: dict # optional Requries( responce_code )
+    """
+    doc = f'''
+        <center>
+            <h1>Hello World<h1>
+            <hr>
+            <p>{request}</p>
+        </center>
+    '''
     return doc, 200
-
-
-@api.get('/request')
-def request(request):
-    return (
-        ujson.dumps(request),
-        200,
-        {"content-type": "application/json; charset=UTF-8"}
-    )
 
 
 def Main():
