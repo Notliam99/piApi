@@ -46,7 +46,7 @@ jobs:
       run: echo "date=$(date)" >> "$GITHUB_ENV"
     
     - name: delete old builds
-      run: rm piApi SYNC
+      run: rm -rf piApi SYNC
 
     - uses: actions/download-artifact@v4
       with:
