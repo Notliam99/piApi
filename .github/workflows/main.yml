@@ -24,7 +24,7 @@ jobs:
         mkdir staged
         mkdir staged/utill_scripts
         cp -r ./piApi ./staged
-        cp ./SYNC ./staged/util_scripts
+        cp ./SYNC ./staged/utill_scripts
         echo "files=$(ls ./staged)" >> "$GITHUB_ENV"
   
     - uses: actions/upload-artifact@v4
