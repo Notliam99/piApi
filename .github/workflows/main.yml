@@ -1,18 +1,21 @@
 # action builds and pushes the satic files to build branch
 
-name: Bun.sh CI
+name: build to branch
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
   stage_copy:
     runs-on: ubuntu-latest
 
     steps: 
+    - name: get the master branch
+      uses: actions/checkout@v4
+      with:
+        ref: main
+    
     - name: commit.sha
       run: echo "${{ github.sha }}" > ./piApi/github.sha.txt
 
