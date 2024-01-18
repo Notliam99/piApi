@@ -1,0 +1,59 @@
+# action builds and pushes the satic files to build branch
+
+name: Bun.sh CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  stage_copy:
+    runs-on: ubuntu-latest
+
+    steps: 
+    - name: commit.sha
+      run: echo "${{ github.sha }}" > ./piApi/github.sha.txt
+
+    - name: stage files
+      run: |
+        mkdir staged
+        mkdir staged/utill_scripts
+        cp -r ./piApi ./staged
+        cp ./SYNC ./staged/util_scripts
+        echo "files=$(ls ./staged)" >> "$GITHUB_ENV"
+  
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ github.sha }}
+        path: ./staged
+  
+  paste_Push:
+    runs-on: ubuntu-latest
+    needs: stage_copy
+    permissions:
+      contents: write
+
+    steps:
+    - name: get the builds branch
+      uses: actions/checkout@v4
+      with:
+        ref: builds
+    
+    - name: get time
+      run: echo "date=$(date)" >> "$GITHUB_ENV"
+    
+    - name: delete old builds
+      run: rm -rf ${{ env.files }}
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: ${{ github.sha }}
+        path: .
+     
+    - uses: actions4git/setup-git@v1 
+    - run: |
+        git add .
+        git commit -m 'autopush @[${{ env.date }}]'
+        git push
