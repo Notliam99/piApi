@@ -368,8 +368,13 @@ class Api():
 
         while True:
             conn, address = socket.socket.accept()
-            request = request_parse(str(conn.recv(1024)))
 
+            # if theres a error starts from the beginning
+            try:
+                request = request_parse(str(conn.recv(1024)))
+            except Exeption as error:
+                pass
+            
             headers = dict({})
 
             try:
