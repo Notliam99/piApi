@@ -1,2 +1,0 @@
-#! /usr/bin/zsh
-ampy -p /dev/ttyACM0 put $1 $1
