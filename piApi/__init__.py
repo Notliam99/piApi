@@ -372,7 +372,7 @@ class Api():
             # if theres a error starts from the beginning
             try:
                 request = request_parse(str(conn.recv(1024)))
-            except Exeption as error:
+            except Exception as e:
                 pass
             
             headers = dict({})
